@@ -1,15 +1,15 @@
 const { validationResult, param, body } = require("express-validator");
 const AppError = require("../utils/customError");
-const validateRequest = (req, res, next) => {
+const { ERROR } = require("../utils/httpStatusText");
+const validateRequest = (req, _res, next) => {
   const err = validationResult(req);
   if (!err.isEmpty()) {
-    next(new AppError(err.array().message, 400));
+    return next(new AppError(err.array()[0].msg, 400));
   }
   next();
 };
 const validcourseId = [
-  
-    param("courseId")
+  param("courseId")
     .notEmpty()
     .withMessage("Course ID is required")
     .isMongoId()
@@ -20,9 +20,7 @@ const createValidation = [
     .notEmpty()
     .withMessage("Title is required")
     .isLength({ min: 3, max: 100 })
-    .withMessage("Title must be 3-100 characters")
-    ,
-  
+    .withMessage("Title must be 3-100 characters"),
   body("price")
     .notEmpty()
     .withMessage("Price is required")

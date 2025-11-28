@@ -9,6 +9,7 @@ const { getCourses, getCourse, addCourse } = require("../Controllers/Course");
 Router.route("/")
   .get(getCourses)
   .post(createValidation, validateRequest, addCourse);
+
 Router.route("/:courseId").get(validcourseId, validateRequest, getCourse);
 
 module.exports = Router;

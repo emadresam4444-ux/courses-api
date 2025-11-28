@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const AppError = require("./utils/customError");
 const errorHandler = require("./middleware/ErrorHandler");
+const httpStatusText = require("./utils/httpStatusText");
 const app = express();
 const dotenv = require("dotenv").config();
 const PORT = process.env.PORT;
@@ -11,6 +12,12 @@ app.use(express.json());
 const CourseRouter = require("./Routes/Course");
 app.use("/course", CourseRouter);
 app.use(errorHandler);
+app.use((req, res) => {
+  res.status(404).json({
+    status: httpStatusText.ERROR,
+    message: "this resource is not available",
+  });
+});
 mongoose
   .connect(URL)
   .then(() => {

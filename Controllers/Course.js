@@ -1,16 +1,19 @@
 const courseModel = require("../Models/Course");
 const asyncWrapper = require("../middleware/asyncWrapper");
-const AppError = require("../utils/customError");
 const httpStatusText = require("../utils/httpStatusText");
-
-const getCourses = asyncWrapper(async (req, res, next) => {
-  const courses = await courseModel.find();
+const getCourses = asyncWrapper(async (req, res) => {
+  const courses = await courseModel.find(
+    {},
+    { __v: false, createdAt: 0, updatedAt: 0 }
+  );
   if (courses.length === 0) {
-    return res.status(200).json({ status: httpStatusText.FAIL,  message: "No courses found" });
+    return res
+      .status(200)
+      .json({ status: httpStatusText.FAIL, message: "No courses found" });
   }
   res.status(200).json({ status: httpStatusText.SUCCESS, data: courses });
 });
-const getCourse = asyncWrapper(async (req, res, next) => {
+const getCourse = asyncWrapper(async (req, res) => {
   const courseId = req.params.courseId;
   const course = await courseModel.findById(courseId);
   if (!course) {
@@ -18,7 +21,7 @@ const getCourse = asyncWrapper(async (req, res, next) => {
   }
   res.status(200).json({ status: httpStatusText.SUCCESS, data: course });
 });
-const addCourse = asyncWrapper(async (req, res, next) => {
+const addCourse = asyncWrapper(async (req, res) => {
   const { title, price, instructor, description, isPublished } = req.body;
   const existcourse = await courseModel.findOne({
     title,
@@ -38,4 +41,5 @@ const addCourse = asyncWrapper(async (req, res, next) => {
   });
   res.status(201).json({ status: httpStatusText.SUCCESS, data: course });
 });
+
 module.exports = { getCourses, getCourse, addCourse };
