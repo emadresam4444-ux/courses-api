@@ -43,5 +43,21 @@ const addCourse = asyncWrapper(async (req, res) => {
   });
   res.status(201).json({ status: httpStatusText.SUCCESS, data: course });
 });
+const updateCourse = asyncWrapper(async (req, res) => {
+  const courseId = req.params.courseId;
+  const course = courseModel.findById(courseId);
+  if (!course) {
+    return;
+  }
+  const UpdatedCourse = courseModel.findByIdAndUpdate(courseId, {
+    $set: {
+      ...req.body,
+    },
+  });
 
-module.exports = { getCourses, getCourse, addCourse };
+  res
+    .status(201)
+    .json({ status: httpStatusText.SUCCESS, data: { UpdatedCourse } });
+});
+
+module.exports = { getCourses, getCourse, addCourse, updateCourse };
