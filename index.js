@@ -1,18 +1,18 @@
 require("dotenv").config();
 const cors = require("cors");
-const { error } = require("console");
 const express = require("express");
 const mongoose = require("mongoose");
 const AppError = require("./utils/customError");
 const errorHandler = require("./middleware/ErrorHandler");
 const httpStatusText = require("./utils/httpStatusText");
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 const URL = process.env.MONGO_URL;
 app.use(express.json());
 const CourseRouter = require("./Routes/Course");
 app.use("/course", CourseRouter);
-app.use((req, res, next) => {
+
+app.use((_req, _res, next) => {
   next(
     new AppError("this resource is not available", 404, httpStatusText.ERROR)
   );

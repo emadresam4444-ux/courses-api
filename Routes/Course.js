@@ -3,6 +3,7 @@ const {
   validateRequest,
   validcourseId,
   createValidation,
+  updateValidation,
 } = require("../middleware/courseValidation");
 
 const {
@@ -10,13 +11,16 @@ const {
   getCourse,
   addCourse,
   updateCourse,
+  deleteCourse,
 } = require("../Controllers/Course");
+
 Router.route("/")
   .get(getCourses)
   .post(createValidation, validateRequest, addCourse);
 
 Router.route("/:courseId")
   .get(validcourseId, validateRequest, getCourse)
-  .patch(validcourseId,validateRequest,updateCourse);
+  .patch(validcourseId, updateValidation, validateRequest, updateCourse)
+  .delete(validcourseId, validateRequest, deleteCourse);
 
 module.exports = Router;
