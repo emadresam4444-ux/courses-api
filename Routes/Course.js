@@ -13,14 +13,21 @@ const {
   updateCourse,
   deleteCourse,
 } = require("../Controllers/Course");
+const verifyToken = require("../middleware/verifyToken");
 
 Router.route("/")
-  .get(getCourses)
-  .post(createValidation, validateRequest, addCourse);
+  .get(verifyToken, getCourses)
+  .post(verifyToken, createValidation, validateRequest, addCourse);
 
 Router.route("/:courseId")
-  .get(validcourseId, validateRequest, getCourse)
-  .patch(validcourseId, updateValidation, validateRequest, updateCourse)
-  .delete(validcourseId, validateRequest, deleteCourse);
+  .get(verifyToken, validcourseId, validateRequest, getCourse)
+  .patch(
+    verifyToken,
+    validcourseId,
+    updateValidation,
+    validateRequest,
+    updateCourse
+  )
+  .delete(verifyToken, validcourseId, validateRequest, deleteCourse);
 
 module.exports = Router;

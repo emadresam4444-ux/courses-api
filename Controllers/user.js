@@ -5,7 +5,13 @@ const httpStatusText = require("../utils/httpStatusText");
 const bcrypt = require("bcryptjs");
 
 const getUsers = asyncWrapper(async (req, res, next) => {
-  const users = await userModel.find({}, { __v: false, password: false });
+  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(req.query.page) || 1;
+  const skip = (page - 1) * limit;
+  const users = await userModel
+    .find({}, { __v: false, password: false })
+    .limit(limit)
+    .skip(skip);
   if (users.length === 0) {
     return next(new AppError("Users not found", 400, httpStatusText.FAIL));
   }
