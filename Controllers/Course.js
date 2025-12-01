@@ -7,7 +7,7 @@ const getCourses = asyncWrapper(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const skip = (page - 1) * limit;
   const courses = await courseModel
-    .find({}, { __v: false, createdAt: 0, updatedAt: 0 })
+    .find({}, { __v: false })
     .limit(limit)
     .skip(skip);
   if (courses.length === 0) {
@@ -67,7 +67,10 @@ const deleteCourse = asyncWrapper(async (req, res, next) => {
   }
   res
     .status(200)
-    .json({ status: httpStatusText.SUCCESS, message: "Deleted Course Sucess" });
+    .json({
+      status: httpStatusText.SUCCESS,
+      message: "Deleted Course Success",
+    });
 });
 module.exports = {
   getCourses,

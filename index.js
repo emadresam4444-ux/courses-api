@@ -9,9 +9,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const URL = process.env.MONGO_URL;
 app.use(express.json());
-const CourseRouter = require("./Routes/Course");
-app.use("/course", CourseRouter);
-
+const courseRouter = require("./Routes/Course");
+const userRouter = require("./Routes/user");
+app.use("/course", courseRouter);
+app.use("/user", userRouter);
 app.use((_req, _res, next) => {
   next(
     new AppError("this resource is not available", 404, httpStatusText.ERROR)
