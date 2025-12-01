@@ -26,8 +26,7 @@ const getCourse = asyncWrapper(async (req, res, next) => {
 const addCourse = asyncWrapper(async (req, res, next) => {
   const { title, price, instructor, description, isPublished } = req.body;
   const existcourse = await courseModel.findOne({
-    title,
-    instructor,
+    $or: [{ title }, { instructor }],
   });
   if (existcourse) {
     return next(new AppError("Course already exist", 400, httpStatusText.FAIL));
@@ -65,12 +64,10 @@ const deleteCourse = asyncWrapper(async (req, res, next) => {
   if (!deletedCourse) {
     return next(new AppError("Course is Not Found", 404, httpStatusText.FAIL));
   }
-  res
-    .status(200)
-    .json({
-      status: httpStatusText.SUCCESS,
-      message: "Deleted Course Success",
-    });
+  res.status(200).json({
+    status: httpStatusText.SUCCESS,
+    message: "Deleted Course Success",
+  });
 });
 module.exports = {
   getCourses,
