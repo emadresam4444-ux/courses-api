@@ -8,10 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "Before add actions/checkout@v3"
-        run: ls
-
       - uses: actions/checkout@v3
 
-      - name: "After add actions/checkout@v3"
-        run: ls
+      - name: "Login to Docker hub"
+        run: docker login --username ${{secrets.DOCKER_USERNAME}} --password ${{secrets.DOCKER_TOKEN}}
