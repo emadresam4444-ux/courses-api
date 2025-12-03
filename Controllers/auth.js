@@ -5,7 +5,7 @@ const httpStatusText = require("../utils/httpStatusText");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const register = asyncWrapper(async (req, res, next) => {
-  const { username, email, password, phone } = req.body;
+  const { username, email, password, phone, role } = req.body;
   const userExist = await userModel.findOne({
     $or: [{ username }, { email }, { phone }],
   });
@@ -13,15 +13,24 @@ const register = asyncWrapper(async (req, res, next) => {
     return next(new AppError("User already exist", 400, httpStatusText.FAIL));
   }
   const hashPassword = await bcrypt.hash(password, 10);
+  const filename = req.file.filename;
+  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${filename}`;
   const user = await userModel.create({
     username,
     email,
     password: hashPassword,
     phone,
+    role,
+    profileImage: imageUrl,
   });
-  const token = await jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
-    expiresIn: "7d",
-  });
+  const token = await jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.SECRET_KEY,
+    {
+      expiresIn: "7d",
+    }
+  );
+  user.password = undefined;
   res
     .status(201)
     .json({ status: httpStatusText.SUCCESS, data: { user, token } });
@@ -43,9 +52,15 @@ const login = asyncWrapper(async (req, res, next) => {
       new AppError("Email or Password not valid", 400, httpStatusText.FAIL)
     );
   }
-  const token =await jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
-    expiresIn: "7d",
-  });
+  const token = await jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.SECRET_KEY,
+    {
+      expiresIn: "7d",
+    }
+  );
+  const filename = req.file.filename;
+  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${filename}`;
   res.status(200).json({
     status: httpStatusText.SUCCESS,
     data: {
@@ -53,6 +68,7 @@ const login = asyncWrapper(async (req, res, next) => {
         email: user.email,
         username: user.username,
         phone: user.phone,
+        profileImage: imageUrl,
       },
       token,
     },

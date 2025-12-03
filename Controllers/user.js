@@ -26,7 +26,7 @@ const getUser = asyncWrapper(async (req, res, next) => {
   res.status(200).json({ status: httpStatusText.SUCCESS, data: { user } });
 });
 const addUser = asyncWrapper(async (req, res, next) => {
-  const { username, email, password, phone } = req.body;
+  const { username, email, password, phone, role } = req.body;
   const userExist = await userModel.findOne({
     $or: [{ username }, { email }, { phone }],
   });
@@ -39,6 +39,7 @@ const addUser = asyncWrapper(async (req, res, next) => {
     email,
     password: hashPassword,
     phone,
+    role,
   });
   res.status(200).json({ status: httpStatusText.SUCCESS, data: { user } });
 });

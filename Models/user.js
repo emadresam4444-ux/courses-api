@@ -1,6 +1,6 @@
 const { Schema, default: mongoose } = require("mongoose");
 const validator = require("validator");
-
+const userRoles = require("../utils/userRoles");
 const userSchema = new Schema(
   {
     username: {
@@ -27,7 +27,7 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters"],
-      select:false
+      select: false,
     },
 
     phone: {
@@ -40,6 +40,15 @@ const userSchema = new Schema(
       },
       minlength: [10, "phone must be at least 10 characters"],
       maxlength: [15, "phone must be less than 16 characters"],
+    },
+    role: {
+      type: String,
+      enum: [userRoles.STUDENT, userRoles.INSTRUCTOR, userRoles.ADMIN],
+      default: userRoles.STUDENT,
+    },
+    profileImage: {
+      type: String,
+      default: "../uploads/profileimage.jpg",
     },
   },
   { timestamps: true }

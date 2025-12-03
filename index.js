@@ -5,13 +5,16 @@ const mongoose = require("mongoose");
 const AppError = require("./utils/customError");
 const errorHandler = require("./middleware/ErrorHandler");
 const httpStatusText = require("./utils/httpStatusText");
+const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const URL = process.env.MONGO_URL;
+
 app.use(express.json());
 const courseRouter = require("./Routes/Course");
 const userRouter = require("./Routes/user");
 const authRouter = require("./Routes/auth");
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/course", courseRouter);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);

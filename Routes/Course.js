@@ -14,20 +14,28 @@ const {
   deleteCourse,
 } = require("../Controllers/Course");
 const verifyToken = require("../middleware/verifyToken");
-
+const allowedTo = require("../middleware/allowedTo");
+const userRoles = require("../utils/userRoles");
 Router.route("/")
-  .get(verifyToken, getCourses)
+  .get(getCourses)
   .post(verifyToken, createValidation, validateRequest, addCourse);
 
 Router.route("/:courseId")
-  .get(verifyToken, validcourseId, validateRequest, getCourse)
+  .get(validcourseId, validateRequest, getCourse)
   .patch(
     verifyToken,
+     allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
     validcourseId,
     updateValidation,
     validateRequest,
     updateCourse
   )
-  .delete(verifyToken, validcourseId, validateRequest, deleteCourse);
+  .delete(
+    verifyToken,
+    allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
+    validcourseId,
+    validateRequest,
+    deleteCourse
+  );
 
 module.exports = Router;
