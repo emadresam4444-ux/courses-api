@@ -59,8 +59,6 @@ const login = asyncWrapper(async (req, res, next) => {
       expiresIn: "7d",
     }
   );
-  const filename = req.file.filename;
-  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${filename}`;
   res.status(200).json({
     status: httpStatusText.SUCCESS,
     data: {
@@ -68,7 +66,7 @@ const login = asyncWrapper(async (req, res, next) => {
         email: user.email,
         username: user.username,
         phone: user.phone,
-        profileImage: imageUrl,
+        profileImage: user.profileImage,
       },
       token,
     },

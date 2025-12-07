@@ -17,7 +17,9 @@ const getCourses = asyncWrapper(async (req, res, next) => {
 });
 const getCourse = asyncWrapper(async (req, res, next) => {
   const courseId = req.params.courseId;
-  const course = await courseModel.findById(courseId);
+  const course = await courseModel.findOne({
+    _id: courseId,
+  });
   if (!course) {
     return next(new AppError("Course is Not Exist", 404, httpStatusText.FAIL));
   }
@@ -34,7 +36,7 @@ const addCourse = asyncWrapper(async (req, res, next) => {
   const course = await courseModel.create({
     title,
     price,
-    instructor,
+    instructor: req.user.id,
     description,
     isPublished,
   });
@@ -42,14 +44,10 @@ const addCourse = asyncWrapper(async (req, res, next) => {
 });
 const updateCourse = asyncWrapper(async (req, res, next) => {
   const courseId = req.params.courseId;
-  const UpdatedCourse = await courseModel.findByIdAndUpdate(
-    courseId,
-    {
-      $set: {
-        ...req.body,
-      },
-    },
-    { new: true, runValidators: true }
+  const UpdatedCourse = await courseModel.findByOneAndUpdate(
+    { _id: courseId, instructor: req.user.id },
+    { $set: { ...req.body } },
+    { new: true }
   );
   if (!UpdatedCourse) {
     return next(new AppError("Course is Not Found", 404, httpStatusText.FAIL));
@@ -60,7 +58,10 @@ const updateCourse = asyncWrapper(async (req, res, next) => {
 });
 const deleteCourse = asyncWrapper(async (req, res, next) => {
   const courseId = req.params.courseId;
-  const deletedCourse = await courseModel.findByIdAndDelete(courseId);
+  const deletedCourse = await courseModel.findByOneAndDelete({
+    _id: courseId,
+    instructor: req.user.id,
+  });
   if (!deletedCourse) {
     return next(new AppError("Course is Not Found", 404, httpStatusText.FAIL));
   }

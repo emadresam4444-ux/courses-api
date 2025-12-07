@@ -29,12 +29,6 @@ const createValidation = [
     .withMessage("Price must be a number")
     .isFloat({ min: 0 })
     .withMessage("Price must be a positive number"),
-  body("instructor")
-    .trim()
-    .notEmpty()
-    .withMessage("Instructor is required")
-    .isLength({ min: 3 })
-    .withMessage("Instructor name must be at least 3 characters"),
   body("description")
     .trim()
     .optional()

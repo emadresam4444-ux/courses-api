@@ -1,3 +1,4 @@
+//problem-->can add many image without register
 const path = require("path");
 const AppError = require("../../utils/customError");
 const httpStatusText = require("../../utils/httpStatusText");

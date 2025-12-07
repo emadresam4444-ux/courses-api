@@ -14,7 +14,6 @@ const CourseSchema = new Schema(
     },
     instructor: {
       type: String,
-      required: true,
       minlength: 3,
     },
     description: {
@@ -25,6 +24,10 @@ const CourseSchema = new Schema(
       type: Boolean,
       required: true,
       default: false,
+    },
+    instructor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
     },
   },
   {

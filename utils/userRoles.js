@@ -3,4 +3,4 @@ const userRoles = {
   INSTRUCTOR: "INSTRUCTOR",
   ADMIN: "ADMIN",
 };
-module.exports= userRoles;
+module.exports = userRoles;
