@@ -1,6 +1,7 @@
 const { Schema, default: mongoose } = require("mongoose");
 const validator = require("validator");
 const userRoles = require("../utils/userRoles");
+const zxcvbn=require("zxcvbn");
 const userSchema = new Schema(
   {
     username: {
@@ -23,23 +24,26 @@ const userSchema = new Schema(
       },
     },
 
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-      minlength: [6, "Password must be at least 6 characters"],
-      select: false,
+  password: {
+  type: String,
+  required: [true, "Password is required"],
+  minlength: [10, "Password must be at least 10 characters"],
+  validate: {
+    validator: function (value) {
+      const strength = zxcvbn(value);
+      return strength.score >= 3;
     },
+    message: "Password is too weak",
+  },
+  select: false,
+},
 
     phone: {
       type: String,
-      required: [true, "Phone number is required"],
       validate: {
-        validator: (value) => {
-          /^\d+$/.test(value);
-        },
+        validator: (phone) => /^\+[1-9]\d{1,14}$/.test(phone),
+        message: "Invalid phone number",
       },
-      minlength: [10, "phone must be at least 10 characters"],
-      maxlength: [15, "phone must be less than 16 characters"],
     },
     role: {
       type: String,

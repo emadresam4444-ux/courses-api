@@ -4,12 +4,14 @@ const {
   addUser,
   updateUser,
   deleteUser,
+  changeUserRole,
 } = require("../Controllers/user");
 const {
   validateRequest,
   validuserid,
   createValidation,
   updateValidation,
+  validRole
 } = require("../middleware/userValidation"); //not completed
 const allowedTo = require("../middleware/allowedTo");
 const verifyToken = require("../middleware/verifyToken");
@@ -47,4 +49,12 @@ Router.route("/:userId")
     validateRequest,
     deleteUser
   );
+Router.route("/role/:userId").patch(
+  verifyToken,
+  validuserid,
+  validRole,
+  validateRequest,
+  allowedTo(userRoles.ADMIN),
+  changeUserRole
+);
 module.exports = Router;

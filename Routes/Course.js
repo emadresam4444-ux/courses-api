@@ -16,6 +16,7 @@ const {
 const verifyToken = require("../middleware/verifyToken");
 const allowedTo = require("../middleware/allowedTo");
 const userRoles = require("../utils/userRoles");
+
 Router.route("/")
   .get(getCourses)
   .post(verifyToken, createValidation, validateRequest, addCourse);

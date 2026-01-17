@@ -3,7 +3,6 @@ const asyncWrapper = require("../middleware/asyncWrapper");
 const AppError = require("../utils/customError");
 const httpStatusText = require("../utils/httpStatusText");
 const bcrypt = require("bcryptjs");
-
 const getUsers = asyncWrapper(async (req, res, next) => {
   const limit = parseInt(req.query.limit) || 10;
   const page = parseInt(req.query.page) || 1;
@@ -21,7 +20,7 @@ const getUser = asyncWrapper(async (req, res, next) => {
   const userId = req.params.userId;
   const user = await userModel.findById(userId);
   if (!user) {
-    return next(new AppError("User not found", 400, httpStatusText.FAIL));
+    return next(new AppError("User not found", 404, httpStatusText.FAIL));
   }
   res.status(200).json({ status: httpStatusText.SUCCESS, data: { user } });
 });
@@ -53,7 +52,7 @@ const updateUser = asyncWrapper(async (req, res, next) => {
     { new: true }
   );
   if (!updatedUser) {
-    return next(new AppError("User not found", 400, httpStatusText.FAIL));
+    return next(new AppError("User not found", 404, httpStatusText.FAIL));
   }
   res
     .status(200)
@@ -63,10 +62,34 @@ const deleteUser = asyncWrapper(async (req, res, next) => {
   const userId = req.params.userId;
   const deletedUser = await userModel.findByIdAndDelete(userId);
   if (!deletedUser) {
-    return next(new AppError("User not found", 400, httpStatusText.FAIL));
+    return next(new AppError("User not found", 404, httpStatusText.FAIL));
   }
   res
     .status(200)
     .json({ status: httpStatusText.SUCCESS, message: "Deleted user success" });
 });
-module.exports = { getUser, getUsers, addUser, updateUser, deleteUser };
+const changeUserRole = asyncWrapper(async (req, res, next) => {
+  const { userId } = req.params;
+  const { role } = req.body;
+
+  const updatedUser = await userModel.findOneAndUpdate(
+    { _id: userId, role: { $ne: role } },
+    { role },
+    { new: true, runValidators: true }
+  );
+  if (!updatedUser) {
+    return next(
+      new AppError("User or Role invalid ", 404, httpStatusText.FAIL)
+    );
+  }
+  res.status(200).json({ status: httpStatusText.SUCCESS, data: updatedUser });
+});
+
+module.exports = {
+  getUser,
+  getUsers,
+  addUser,
+  updateUser,
+  deleteUser,
+  changeUserRole,
+};

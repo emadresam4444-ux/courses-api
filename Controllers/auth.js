@@ -2,26 +2,24 @@ const userModel = require("../Models/user");
 const asyncWrapper = require("../middleware/asyncWrapper");
 const AppError = require("../utils/customError");
 const httpStatusText = require("../utils/httpStatusText");
+const userRoles = require("../utils/userRoles");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const register = asyncWrapper(async (req, res, next) => {
-  const { username, email, password, phone, role } = req.body;
+  const { username, email, password, phone } = req.body;
   const userExist = await userModel.findOne({
-    $or: [{ username }, { email }, { phone }],
+    $or: [{ username }, { email }],
   });
   if (userExist) {
     return next(new AppError("User already exist", 400, httpStatusText.FAIL));
   }
   const hashPassword = await bcrypt.hash(password, 10);
-  const filename = req.file.filename;
-  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${filename}`;
   const user = await userModel.create({
     username,
     email,
     password: hashPassword,
     phone,
-    role,
-    profileImage: imageUrl,
+    role: userRoles.STUDENT,
   });
   const token = await jwt.sign(
     { id: user._id, role: user.role },

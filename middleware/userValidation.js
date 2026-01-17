@@ -1,6 +1,8 @@
 const { body, param, validationResult } = require("express-validator");
 const AppError = require("../utils/customError");
 const httpStatusText = require("../utils/httpStatusText");
+const userRoles = require("../utils/userRoles");
+const zxcvbn = require("zxcvbn");
 const validateRequest = (req, _res, next) => {
   const err = validationResult(req);
   if (!err.isEmpty()) {
@@ -8,7 +10,6 @@ const validateRequest = (req, _res, next) => {
   }
   next();
 };
-
 const validuserid = [
   param("userId")
     .notEmpty()
@@ -16,7 +17,14 @@ const validuserid = [
     .isMongoId()
     .withMessage("Invalid User ID"),
 ];
-
+const validRole = (req, _res, next) => {
+  const { role } = req.body;
+  const validRoles = Object.values(userRoles);
+  if (!validRoles.includes(role)) {
+    return next(new AppError("Invalid Role", 400, httpStatusText.FAIL));
+  }
+  next();
+};
 const createValidation = [
   body("username")
     .trim()
@@ -32,15 +40,8 @@ const createValidation = [
     .withMessage("Invalid Email")
     .isString()
     .withMessage("Email must be string"),
-  body("password")
-    .notEmpty()
-    .withMessage("password is required")
-    .isStrongPassword()
-    .withMessage("This is Weak password")
-    .isLength({ min: 8, max: 30 }),
   body("phone")
-    .notEmpty()
-    .withMessage("phone is required")
+    .optional()
     .isNumeric()
     .withMessage("Invalid phone number")
     .isMobilePhone("any")
@@ -65,13 +66,6 @@ const updateValidation = [
     .withMessage("Invalid Email")
     .isString()
     .withMessage("Email must be string"),
-  body("password")
-    .optional()
-    .notEmpty()
-    .withMessage("password is required")
-    .isStrongPassword()
-    .withMessage("This is Weak password")
-    .isLength({ min: 8, max: 30 }),
   body("phone")
     .optional()
     .notEmpty()
@@ -83,10 +77,26 @@ const updateValidation = [
     .isLength({ min: 10, max: 15 })
     .withMessage("username must be 10-16 number"),
 ];
+const validateStrongPassword= (req,res,next)=>{
+const { password } = req.body;
+ if (!password) {
+    return next(new AppError("Password is required", 400, httpStatusText.FAIL));
+  }
+   if (password.length < 10) {
+    return next(new AppError("Password must be at least 10 characters", 400, httpStatusText.FAIL));
+  }
+  const strength = zxcvbn(password);
+  if (strength.score <= 3) { 
+    return next(new AppError("Password is too weak, try adding symbols, numbers, and uppercase letters", 400, httpStatusText.FAIL));
+  }
 
+  next();
+}
 module.exports = {
   validateRequest,
   validuserid,
   createValidation,
   updateValidation,
+  validRole,
+  validateStrongPassword
 };
