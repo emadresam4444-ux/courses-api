@@ -24,5 +24,5 @@ const fileFilter = (req, file, cb) => {
   }
   cb(null, true);
 };
-const upload = multer({ storage: storage, fileFilter });
+const upload = multer({ storage, fileFilter });
 module.exports = upload;

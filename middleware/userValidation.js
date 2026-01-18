@@ -79,6 +79,7 @@ const updateValidation = [
 ];
 const validateStrongPassword= (req,res,next)=>{
 const { password } = req.body;
+
  if (!password) {
     return next(new AppError("Password is required", 400, httpStatusText.FAIL));
   }
@@ -86,7 +87,7 @@ const { password } = req.body;
     return next(new AppError("Password must be at least 10 characters", 400, httpStatusText.FAIL));
   }
   const strength = zxcvbn(password);
-  if (strength.score <= 3) { 
+  if (strength.score <= 2) { 
     return next(new AppError("Password is too weak, try adding symbols, numbers, and uppercase letters", 400, httpStatusText.FAIL));
   }
 

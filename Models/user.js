@@ -31,7 +31,7 @@ const userSchema = new Schema(
   validate: {
     validator: function (value) {
       const strength = zxcvbn(value);
-      return strength.score >= 3;
+      return strength.score >= 2;
     },
     message: "Password is too weak",
   },

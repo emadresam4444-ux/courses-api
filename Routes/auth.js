@@ -1,6 +1,5 @@
 const Router = require("express").Router();
 const { register, login } = require("../Controllers/auth");
-const upload = require("../middleware/uploadFile/uploadProfileImage");
 const {
   validateRequest,
   createValidation,

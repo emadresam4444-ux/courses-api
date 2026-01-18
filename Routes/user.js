@@ -5,14 +5,16 @@ const {
   updateUser,
   deleteUser,
   changeUserRole,
+  uploadProfileImage,
 } = require("../Controllers/user");
 const {
   validateRequest,
   validuserid,
   createValidation,
   updateValidation,
-  validRole
+  validRole,
 } = require("../middleware/userValidation"); //not completed
+const upload = require("../middleware/uploadFile/uploadProfileImage");
 const allowedTo = require("../middleware/allowedTo");
 const verifyToken = require("../middleware/verifyToken");
 const Router = require("express").Router();
@@ -24,7 +26,7 @@ Router.route("/")
     allowedTo(userRoles.ADMIN),
     createValidation,
     validateRequest,
-    addUser
+    addUser,
   );
 Router.route("/:userId")
   .get(
@@ -32,7 +34,7 @@ Router.route("/:userId")
     allowedTo(userRoles.ADMIN),
     validuserid,
     validateRequest,
-    getUser
+    getUser,
   )
   .patch(
     verifyToken,
@@ -40,21 +42,26 @@ Router.route("/:userId")
     validuserid,
     updateValidation,
     validateRequest,
-    updateUser
+    updateUser,
   )
   .delete(
     verifyToken,
     allowedTo(userRoles.ADMIN),
     validuserid,
     validateRequest,
-    deleteUser
+    deleteUser,
   );
 Router.route("/role/:userId").patch(
   verifyToken,
+  allowedTo(userRoles.ADMIN),
   validuserid,
   validRole,
   validateRequest,
-  allowedTo(userRoles.ADMIN),
-  changeUserRole
+  changeUserRole,
+);
+Router.route("/profile/upload").post(
+  verifyToken,
+  upload.single("profile"),
+  uploadProfileImage,
 );
 module.exports = Router;

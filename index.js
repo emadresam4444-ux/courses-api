@@ -23,7 +23,7 @@ app.use("/lecture", lectureRouter);
 
 app.use((_req, _res, next) => {
   next(
-    new AppError("this resource is not available", 404, httpStatusText.ERROR)
+    new AppError("this resource is not available", 404, httpStatusText.ERROR),
   );
 });
 app.use(errorHandler);
