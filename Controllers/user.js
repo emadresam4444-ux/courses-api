@@ -44,13 +44,13 @@ const addUser = asyncWrapper(async (req, res, next) => {
 });
 const updateUser = asyncWrapper(async (req, res, next) => {
   const userId = req.params.userId;
-  const {username,email,phone}=req.body;
+  const { username, email, phone } = req.body;
   const updatedUser = await userModel.findByIdAndUpdate(
     userId,
     {
-      $set: {username,email,phone},
+      $set: { username, email, phone },
     },
-    { new: true }
+    { new: true },
   );
   if (!updatedUser) {
     return next(new AppError("User not found", 404, httpStatusText.FAIL));
@@ -75,33 +75,32 @@ const changeUserRole = asyncWrapper(async (req, res, next) => {
   const updateUser = await userModel.findOneAndUpdate(
     { _id: userId, role: { $ne: role } },
     { role },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
   if (!updateUser) {
     return next(
-      new AppError("User or Role invalid ", 404, httpStatusText.FAIL)
+      new AppError("User or Role invalid ", 404, httpStatusText.FAIL),
     );
   }
   res.status(200).json({ status: httpStatusText.SUCCESS, data: updateUser });
 });
 const uploadProfileImage = asyncWrapper(async (req, res, next) => {
   const userId = req.user.id;
-    const profileImageReq = req.file.filename;
+  const profileImageReq = req.file.path;
+
   if (!profileImageReq) {
     return next(new AppError("No image uploaded", 400, httpStatusText.FAIL));
   }
 
   await userModel.findByIdAndUpdate(userId, {
-    $set: { profileImage: profileImageReq }
+    $set: { profileImage: profileImageReq },
   });
 
   res.status(200).json({
     status: httpStatusText.SUCCESS,
-    message: "Profile image changed",
-    profileImage: profileImageReq
+    data: profileImageReq,
   });
 });
-
 
 module.exports = {
   getUser,
@@ -110,5 +109,5 @@ module.exports = {
   updateUser,
   deleteUser,
   changeUserRole,
-  uploadProfileImage
+  uploadProfileImage,
 };
