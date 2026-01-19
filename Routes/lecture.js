@@ -1,4 +1,4 @@
-const Router = require("express").Router({});
+const Router = require("express").Router();
 const verifyToken = require("../middleware/verifyToken");
 const allowedTo = require("../middleware/allowedTo");
 const userRoles = require("../utils/userRoles");
@@ -9,31 +9,39 @@ const {
   deleteLecture,
   getLecture,
 } = require("../Controllers/lecture");
-
+const {
+  createValidation,
+  updateValidation,
+} = require("../middleware/validation/lectureValidation");
+const preventEmptyReq = require("../middleware/validation/preventEmptyReq");
 Router.route("/").post(
   verifyToken,
   allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
-  addLecture
+  preventEmptyReq,
+  createValidation,
+  addLecture,
 );
 Router.route("/:lectureId")
   .patch(
     verifyToken,
     allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
-    updateLecture
+    preventEmptyReq,
+    updateValidation,
+    updateLecture,
   )
   .delete(
     verifyToken,
     allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
-    deleteLecture
+    deleteLecture,
   );
 Router.route("/course/:courseId").get(
   verifyToken,
   allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
-  getLectures
+  getLectures,
 );
 Router.route("/:lectureId/course/:courseId/").get(
   verifyToken,
   allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
-  getLecture
+  getLecture,
 );
 module.exports = Router;

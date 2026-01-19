@@ -9,7 +9,7 @@ const getCourses = asyncWrapper(async (req, res, next) => {
   const courses = await courseModel
     .find({}, { __v: false })
     .limit(limit)
-    .skip(skip);
+    .skip(skip).populate('instructor');
   if (courses.length === 0) {
     return next(new AppError("Courses is Not Found", 404, httpStatusText.FAIL));
   }
@@ -19,14 +19,15 @@ const getCourse = asyncWrapper(async (req, res, next) => {
   const courseId = req.params.courseId;
   const course = await courseModel.findOne({
     _id: courseId,
-  });
+  }).populate('instructor');
   if (!course) {
     return next(new AppError("Course is Not Exist", 404, httpStatusText.FAIL));
   }
   res.status(200).json({ status: httpStatusText.SUCCESS, data: { course } });
 });
 const addCourse = asyncWrapper(async (req, res, next) => {
-  const { title, price, instructor, description, isPublished } = req.body;
+  const { title, price, description, isPublished } = req.body;
+  const instructor=req.user.id;
   const existcourse = await courseModel.findOne({
     $or: [{ title }, { instructor }],
   });
@@ -44,9 +45,10 @@ const addCourse = asyncWrapper(async (req, res, next) => {
 });
 const updateCourse = asyncWrapper(async (req, res, next) => {
   const courseId = req.params.courseId;
-  const UpdatedCourse = await courseModel.findByOneAndUpdate(
+  const{title,price,description,isPublished}=req.body;
+  const UpdatedCourse = await courseModel.findByIdAndUpdate(
     { _id: courseId, instructor: req.user.id },
-    { $set: { ...req.body } },
+    { $set: {title,price,description,isPublished} },
     { new: true }
   );
   if (!UpdatedCourse) {

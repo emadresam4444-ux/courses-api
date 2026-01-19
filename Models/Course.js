@@ -1,4 +1,5 @@
-const { Schema, default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 const CourseSchema = new Schema(
   {
     title: {
@@ -12,10 +13,6 @@ const CourseSchema = new Schema(
       required: true,
       min: 0,
     },
-    instructor: {
-      type: String,
-      minlength: 3,
-    },
     description: {
       type: String,
       default: "No description provided",
@@ -26,13 +23,13 @@ const CourseSchema = new Schema(
       default: false,
     },
     instructor: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "user",
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 const courseModel = mongoose.model("Course", CourseSchema);
 module.exports = courseModel;

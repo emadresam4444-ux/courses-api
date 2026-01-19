@@ -1,4 +1,5 @@
-const { Schema, default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 const validator = require("validator");
 const userRoles = require("../utils/userRoles");
 const zxcvbn=require("zxcvbn");

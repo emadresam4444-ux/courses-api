@@ -5,7 +5,7 @@ const AppError = require("../utils/customError");
 const httpStatusText = require("../utils/httpStatusText");
 const getLectures = asyncWrapper(async (req, res, next) => {
   const courseId = req.params.courseId;
-  const lectures = await lectureModel.find({ courseId });
+  const lectures = await lectureModel.find({ courseId }).populate('courseId');
   if (lectures.length === 0) {
     return next(new AppError("Lecture not found", 404, httpStatusText.FAIL));
   }
@@ -16,7 +16,7 @@ const getLecture = asyncWrapper(async (req, res, next) => {
   const lecture = await lectureModel.findOne({
     _id: lectureId,
     courseId,
-  });
+  }).populate('courseId');
   if (!lecture) {
     return next(new AppError("Lecture not found", 404, httpStatusText.FAIL));
   }

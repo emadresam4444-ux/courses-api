@@ -1,13 +1,4 @@
-const { body, param, validationResult } = require("express-validator");
-const AppError = require("../utils/customError");
-const httpStatusText = require("../utils/httpStatusText");
-const validateRequest = (req, _res, next) => {
-  const err = validationResult(req);
-  if (!err.isEmpty()) {
-    return next(new AppError(err.array()[0].msg, 400, httpStatusText.FAIL));
-  }
-  next();
-};
+const { body, param} = require("express-validator");
 const validcourseId = [
   param("courseId")
     .notEmpty()
@@ -56,13 +47,6 @@ const updateValidation = [
     .withMessage("Price must be a number")
     .isFloat({ min: 0 })
     .withMessage("Price must be a positive number"),
-  body("instructor")
-    .trim()
-    .optional()
-    .notEmpty()
-    .withMessage("Instructor is required")
-    .isLength({ min: 3 })
-    .withMessage("Instructor name must be at least 3 characters"),
   body("description")
     .trim()
     .optional()
@@ -75,7 +59,6 @@ const updateValidation = [
     .withMessage("isPublished must be true or false"),
 ];
 module.exports = {
-  validateRequest,
   validcourseId,
   createValidation,
   updateValidation,

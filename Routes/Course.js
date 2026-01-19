@@ -1,11 +1,10 @@
 const Router = require("express").Router();
 const {
-  validateRequest,
   validcourseId,
   createValidation,
   updateValidation,
-} = require("../middleware/courseValidation");
-
+} = require("../middleware/validation/courseValidation");
+const validateRequest = require("../middleware/validation/validateRequest");
 const {
   getCourses,
   getCourse,
@@ -13,30 +12,39 @@ const {
   updateCourse,
   deleteCourse,
 } = require("../Controllers/Course");
+const preventEmptyReq = require("../middleware/validation/preventEmptyReq");
 const verifyToken = require("../middleware/verifyToken");
 const allowedTo = require("../middleware/allowedTo");
 const userRoles = require("../utils/userRoles");
 
 Router.route("/")
   .get(getCourses)
-  .post(verifyToken, createValidation, validateRequest, addCourse);
+  .post(
+    verifyToken,
+    allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
+    preventEmptyReq,
+    createValidation,
+    validateRequest,
+    addCourse,
+  );
 
 Router.route("/:courseId")
   .get(validcourseId, validateRequest, getCourse)
   .patch(
     verifyToken,
-     allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
+    allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
+    preventEmptyReq,
     validcourseId,
     updateValidation,
-    validateRequest,
-    updateCourse
+    validateRequest, 
+    updateCourse,
   )
   .delete(
     verifyToken,
     allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
     validcourseId,
     validateRequest,
-    deleteCourse
+    deleteCourse,
   );
 
 module.exports = Router;

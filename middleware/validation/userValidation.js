@@ -1,15 +1,9 @@
-const { body, param, validationResult } = require("express-validator");
-const AppError = require("../utils/customError");
-const httpStatusText = require("../utils/httpStatusText");
-const userRoles = require("../utils/userRoles");
+const { body, param} = require("express-validator");
+const AppError = require("../../utils/customError");
+const httpStatusText = require("../../utils/httpStatusText");
+const userRoles = require("../../utils/userRoles");
 const zxcvbn = require("zxcvbn");
-const validateRequest = (req, _res, next) => {
-  const err = validationResult(req);
-  if (!err.isEmpty()) {
-    return next(new AppError(err.array()[0].msg, 400, httpStatusText.FAIL));
-  }
-  next();
-};
+
 const validuserid = [
   param("userId")
     .notEmpty()
@@ -77,27 +71,38 @@ const updateValidation = [
     .isLength({ min: 10, max: 15 })
     .withMessage("username must be 10-16 number"),
 ];
-const validateStrongPassword= (req,res,next)=>{
-const { password } = req.body;
+const validateStrongPassword = (req, res, next) => {
+  const { password } = req.body;
 
- if (!password) {
+  if (!password) {
     return next(new AppError("Password is required", 400, httpStatusText.FAIL));
   }
-   if (password.length < 10) {
-    return next(new AppError("Password must be at least 10 characters", 400, httpStatusText.FAIL));
+  if (password.length < 10) {
+    return next(
+      new AppError(
+        "Password must be at least 10 characters",
+        400,
+        httpStatusText.FAIL,
+      ),
+    );
   }
   const strength = zxcvbn(password);
-  if (strength.score <= 2) { 
-    return next(new AppError("Password is too weak, try adding symbols, numbers, and uppercase letters", 400, httpStatusText.FAIL));
+  if (strength.score <= 2) {
+    return next(
+      new AppError(
+        "Password is too weak, try adding symbols, numbers, and uppercase letters",
+        400,
+        httpStatusText.FAIL,
+      ),
+    );
   }
 
   next();
-}
+};
 module.exports = {
-  validateRequest,
   validuserid,
   createValidation,
   updateValidation,
   validRole,
-  validateStrongPassword
+  validateStrongPassword,
 };

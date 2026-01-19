@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const lectureShema = new mongoose.Schema(
+const { Schema } = mongoose;
+const lectureShema = new Schema(
   {
     title: {
       type: String,
@@ -8,7 +9,7 @@ const lectureShema = new mongoose.Schema(
       maxlength: 100,
     },
     courseId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Course",
       required: true,
     },

@@ -8,22 +8,24 @@ const {
   uploadProfileImage,
 } = require("../Controllers/user");
 const {
-  validateRequest,
   validuserid,
   createValidation,
   updateValidation,
   validRole,
-} = require("../middleware/userValidation"); //not completed
+} = require("../middleware/validation/userValidation"); //not completed
+const validateRequest = require("../middleware/validation/validateRequest");
 const upload = require("../middleware/uploadFile/uploadProfileImage");
 const allowedTo = require("../middleware/allowedTo");
 const verifyToken = require("../middleware/verifyToken");
 const Router = require("express").Router();
 const userRoles = require("../utils/userRoles");
+const preventEmptyReq = require("../middleware/validation/preventEmptyReq");
 Router.route("/")
   .get(verifyToken, allowedTo(userRoles.ADMIN), validateRequest, getUsers)
   .post(
     verifyToken,
     allowedTo(userRoles.ADMIN),
+    preventEmptyReq,
     createValidation,
     validateRequest,
     addUser,
@@ -39,6 +41,7 @@ Router.route("/:userId")
   .patch(
     verifyToken,
     allowedTo(userRoles.ADMIN),
+    preventEmptyReq,
     validuserid,
     updateValidation,
     validateRequest,
@@ -54,6 +57,7 @@ Router.route("/:userId")
 Router.route("/role/:userId").patch(
   verifyToken,
   allowedTo(userRoles.ADMIN),
+  preventEmptyReq,
   validuserid,
   validRole,
   validateRequest,
