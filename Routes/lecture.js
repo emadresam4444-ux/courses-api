@@ -13,12 +13,13 @@ const {
   createValidation,
   updateValidation,
 } = require("../middleware/validation/lectureValidation");
-const preventEmptyReq = require("../middleware/validation/preventEmptyReq");
+const {preventEmptyReq,validateRequest} = require("../middleware/validation/globalValidator");
 Router.route("/").post(
   verifyToken,
   allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
   preventEmptyReq,
   createValidation,
+  validateRequest,
   addLecture,
 );
 Router.route("/:lectureId")
@@ -27,6 +28,7 @@ Router.route("/:lectureId")
     allowedTo(userRoles.ADMIN, userRoles.INSTRUCTOR),
     preventEmptyReq,
     updateValidation,
+    validateRequest,
     updateLecture,
   )
   .delete(

@@ -13,11 +13,10 @@ const register = asyncWrapper(async (req, res, next) => {
   if (userExist) {
     return next(new AppError("User already exist", 400, httpStatusText.FAIL));
   }
-  const hashPassword = await bcrypt.hash(password, 10);
   const user = await userModel.create({
     username,
     email,
-    password: hashPassword,
+    password,
     phone,
     role: userRoles.STUDENT,
   });

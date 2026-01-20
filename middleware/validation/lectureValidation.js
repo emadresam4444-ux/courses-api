@@ -8,7 +8,7 @@ const createValidation = [
     .isLength({ min: 3, max: 100 })
     .withMessage("Title must be 3-100 characters"),
 
-  body("courseId")
+  body("course")
     .notEmpty()
     .withMessage("Course ID is required")
     .isMongoId()
@@ -52,7 +52,7 @@ const updateValidation = [
     .isLength({ min: 3, max: 100 })
     .withMessage("Title must be 3-100 characters"),
 
-  body("courseId")
+  body("course")
     .optional()
     .isMongoId()
     .withMessage("Invalid Course ID"),

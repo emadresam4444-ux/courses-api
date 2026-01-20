@@ -2,7 +2,6 @@ const userModel = require("../Models/user");
 const asyncWrapper = require("../middleware/asyncWrapper");
 const AppError = require("../utils/customError");
 const httpStatusText = require("../utils/httpStatusText");
-const bcrypt = require("bcryptjs");
 const getUsers = asyncWrapper(async (req, res, next) => {
   const limit = parseInt(req.query.limit) || 10;
   const page = parseInt(req.query.page) || 1;
@@ -32,11 +31,10 @@ const addUser = asyncWrapper(async (req, res, next) => {
   if (userExist) {
     return next(new AppError("User already exist", 400, httpStatusText.FAIL));
   }
-  const hashPassword = await bcrypt.hash(password, 10);
   const user = await userModel.create({
     username,
     email,
-    password: hashPassword,
+    password,
     phone,
     role,
   });

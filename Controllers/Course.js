@@ -28,9 +28,7 @@ const getCourse = asyncWrapper(async (req, res, next) => {
 const addCourse = asyncWrapper(async (req, res, next) => {
   const { title, price, description, isPublished } = req.body;
   const instructor=req.user.id;
-  const existcourse = await courseModel.findOne({
-    $or: [{ title }, { instructor }],
-  });
+  const existcourse = await courseModel.findOne({title , instructor});
   if (existcourse) {
     return next(new AppError("Course already exist", 400, httpStatusText.FAIL));
   }
@@ -46,7 +44,7 @@ const addCourse = asyncWrapper(async (req, res, next) => {
 const updateCourse = asyncWrapper(async (req, res, next) => {
   const courseId = req.params.courseId;
   const{title,price,description,isPublished}=req.body;
-  const UpdatedCourse = await courseModel.findByIdAndUpdate(
+  const UpdatedCourse = await courseModel.findOneAndUpdate(
     { _id: courseId, instructor: req.user.id },
     { $set: {title,price,description,isPublished} },
     { new: true }

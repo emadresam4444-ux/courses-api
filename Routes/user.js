@@ -12,14 +12,13 @@ const {
   createValidation,
   updateValidation,
   validRole,
-} = require("../middleware/validation/userValidation"); //not completed
-const validateRequest = require("../middleware/validation/validateRequest");
+} = require("../middleware/validation/userValidation");
+const {validateRequest,preventEmptyReq} = require("../middleware/validation/globalValidator");
 const upload = require("../middleware/uploadFile/uploadProfileImage");
 const allowedTo = require("../middleware/allowedTo");
 const verifyToken = require("../middleware/verifyToken");
 const Router = require("express").Router();
 const userRoles = require("../utils/userRoles");
-const preventEmptyReq = require("../middleware/validation/preventEmptyReq");
 Router.route("/")
   .get(verifyToken, allowedTo(userRoles.ADMIN), validateRequest, getUsers)
   .post(

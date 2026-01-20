@@ -2,7 +2,10 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const validator = require("validator");
 const userRoles = require("../utils/userRoles");
-const zxcvbn=require("zxcvbn");
+const zxcvbn = require("zxcvbn");
+const bcrypt = require("bcryptjs");
+const AppError = require("../utils/customError");
+const httpStatusText = require("../utils/httpStatusText");
 const userSchema = new Schema(
   {
     username: {
@@ -25,19 +28,19 @@ const userSchema = new Schema(
       },
     },
 
-  password: {
-  type: String,
-  required: [true, "Password is required"],
-  minlength: [10, "Password must be at least 10 characters"],
-  validate: {
-    validator: function (value) {
-      const strength = zxcvbn(value);
-      return strength.score >= 2;
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      minlength: [10, "Password must be at least 10 characters"],
+      validate: {
+        validator: function (value) {
+          const strength = zxcvbn(value);
+          return strength.score >= 2;
+        },
+        message: "Password is too weak",
+      },
+      select: false,
     },
-    message: "Password is too weak",
-  },
-  select: false,
-},
 
     phone: {
       type: String,
@@ -56,8 +59,19 @@ const userSchema = new Schema(
       default: "../uploads/profileimage.jpg",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
+    return;
+  }
+  try {
+    this.password = await bcrypt.hash(this.password, 12);
+    
+  } catch (err) {
+    throw new AppError(err.message,500,httpStatusText.ERROR)
+  }
+});
 
 const userModel = mongoose.model("user", userSchema);
 module.exports = userModel;

@@ -13,20 +13,22 @@ const courseRouter = require("./Routes/Course");
 const userRouter = require("./Routes/user");
 const authRouter = require("./Routes/auth");
 const lectureRouter = require("./Routes/lecture");
-const enrollment=require('./Routes/enrollment');
+const enrollment = require("./Routes/enrollment");
+const review = require("./Models/review");
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/course", courseRouter);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
 app.use("/lecture", lectureRouter);
 app.use("/enrollment", enrollment);
+app.use("/review", review);
 app.use((_req, _res, next) => {
   next(
     new AppError("this resource is not available", 404, httpStatusText.ERROR),
   );
 });
 app.use(errorHandler);
-mongooseDB()
+mongooseDB();
 app.listen(PORT, () => {
-      console.log(`Server is Running on Port ${PORT}`);
-    });
+  console.log(`Server is Running on Port ${PORT}`);
+});

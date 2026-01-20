@@ -4,7 +4,6 @@ const {
   createValidation,
   updateValidation,
 } = require("../middleware/validation/courseValidation");
-const validateRequest = require("../middleware/validation/validateRequest");
 const {
   getCourses,
   getCourse,
@@ -12,7 +11,7 @@ const {
   updateCourse,
   deleteCourse,
 } = require("../Controllers/Course");
-const preventEmptyReq = require("../middleware/validation/preventEmptyReq");
+const {validateRequest,preventEmptyReq} = require("../middleware/validation/globalValidator");
 const verifyToken = require("../middleware/verifyToken");
 const allowedTo = require("../middleware/allowedTo");
 const userRoles = require("../utils/userRoles");

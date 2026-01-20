@@ -26,6 +26,17 @@ const CourseSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "user",
     },
+    averageRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+      set: (rating) => Math.round(rating * 10) / 10,
+    },
+    ratingsCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
