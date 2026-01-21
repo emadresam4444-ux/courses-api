@@ -15,14 +15,16 @@ const {
   createReviewValidation,
   updateReviewValidation,
   validReviewId,
+  isEnroll
 } = require("../middleware/validation/reviewValidation");
-Router.route("/")
-  .get(verifyToken, getReviews)
-  .post(
+Router.route("/course/:courseId")
+  .get(verifyToken, getReviews);
+Router.route('/').post(
     verifyToken,
     preventEmptyReq,
     createReviewValidation,
     validateRequest,
+    isEnroll,
     addReview,
   );
 Router.route("/:reviewId")
@@ -33,7 +35,8 @@ Router.route("/:reviewId")
     validReviewId,
     updateReviewValidation,
     validateRequest,
+    isEnroll,
     updateReview,
   )
-  .delete(verifyToken, validReviewId, validateRequest, deleteReview);
+  .delete(verifyToken, validReviewId, validateRequest,isEnroll, deleteReview);
 module.exports = Router;

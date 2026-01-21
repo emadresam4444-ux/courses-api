@@ -5,47 +5,47 @@ const AppError = require("../utils/customError");
 const httpStatusText = require("../utils/httpStatusText");
 
 const enrollment = asyncWrapper(async (req, res, next) => {
-  const { courseId } = req.body; //validation ObjectId
+  const { course } = req.body;
   const userId = req.user.id;
   const user = await userModel.findById(userId);
   if (!user) {
     return next(new AppError("User not found", 404, httpStatusText.FAIL));
   }
   const alreadyEnrolled = await EnrollmentModel.findOne({
-    userId,
-    courseId,
+    user:userId,
+    course,
   });
   if (alreadyEnrolled) {
     return next(
       new AppError(
         "User already Enrolled in this course",
-        404,
+        400,
         httpStatusText.FAIL,
       ),
     );
   }
   await EnrollmentModel.create({
-    userId,
-    courseId,
+    user:userId,
+    course,
   });
   res.status(201).json({
     status: httpStatusText.SUCCESS,
-    message: "Enrollment Succesfully",
+    message: "Enrolled successfully",
   });
 });
 
 const getEnrollment = asyncWrapper(async (req, res, next) => {
-    userId=req.user.id;
-    const Enrollment= await EnrollmentModel.find({
-        userId
-    }).populate('userId courseId')
-    if(!Enrollment)
+   const userId=req.user.id;
+    const enrollment= await EnrollmentModel.find({
+        user:userId
+    }).populate('user course')
+    if(enrollment.length===0)
     {
         return next(new AppError("User don't have any enrollments",404,httpStatusText.FAIL));
     }
     res.status(200).json({
     status: httpStatusText.SUCCESS,
-    data:Enrollment,
+    data:enrollment,
 });
 
 });

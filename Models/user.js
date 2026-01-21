@@ -61,15 +61,15 @@ const userSchema = new Schema(
   },
   { timestamps: true },
 );
-userSchema.pre("save", async function () {
+userSchema.pre("save",async function (next) {
   if (!this.isModified("password")) {
-    return;
+    return next();
   }
   try {
     this.password = await bcrypt.hash(this.password, 12);
     
   } catch (err) {
-    throw new AppError(err.message,500,httpStatusText.ERROR)
+    next(new AppError(err.message,500,httpStatusText.ERROR))
   }
 });
 

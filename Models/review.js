@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-
+const courseModel=require('../Models/Course')
 const reviewSchema = new Schema(
   {
     course: {
@@ -25,7 +25,7 @@ const reviewSchema = new Schema(
     comment: {
       type: String,
       trim: true,
-      minlength: [5, 'Comment must be at least 5 characters'],
+      minlength: [4, 'Comment must be at least 4 characters'],
       maxlength: [500, 'Comment must be at most 500 characters'],
     },
   },
@@ -33,8 +33,33 @@ const reviewSchema = new Schema(
     timestamps: true,
   }
 );
-
+reviewSchema.statics.updateCourseRating=async function(courseId)
+{
+  const stats=await this.aggregate([
+    {$match:{course:courseId}},
+    {
+      $group:{
+        _id:null,
+        count:{$sum:1},
+        avg:{$avg:'$rating'}
+      }
+    }
+  ])
+  const {count,avg}=stats[0]||{count:0,avg:0};
+    await courseModel.findByIdAndUpdate(courseId,{
+      averageRating:avg,
+      ratingsCount:count,
+    },{runValidators:true});
+}
+reviewSchema.post('save',async function(doc)
+{
+await doc.constructor.updateCourseRating(doc.course);
+});
+reviewSchema.post( /^(findOneAndUpdate|findOneAndDelete|findByIdAndUpdate|findByIdAndDelete)$/,async function(doc)
+{
+await doc.constructor.updateCourseRating(doc.course);
+});
 reviewSchema.index({ course: 1, user: 1 }, { unique: true });
 
-const Review = mongoose.model('Review', reviewSchema);
-module.exports = Review;
+const review = mongoose.model('Review', reviewSchema);
+module.exports = review;

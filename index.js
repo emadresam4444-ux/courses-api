@@ -14,7 +14,7 @@ const userRouter = require("./Routes/user");
 const authRouter = require("./Routes/auth");
 const lectureRouter = require("./Routes/lecture");
 const enrollment = require("./Routes/enrollment");
-const review = require("./Models/review");
+const review = require("./Routes/review");
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/course", courseRouter);
 app.use("/user", userRouter);

@@ -4,7 +4,7 @@ const AppError = require("../utils/customError");
 const httpStatusText = require("../utils/httpStatusText");
 
 const getReviews = asyncWrapper(async (req, res, next) => {
-  const { course } = req.body;
+  const course = req.params.courseId;
   const reviews = await reviewModel.find({ course });
   if (reviews.length===0) {
     return next(

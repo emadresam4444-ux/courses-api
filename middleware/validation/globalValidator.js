@@ -9,9 +9,9 @@ const validateRequest = (req, _res, next) => {
   next();
 };
 const preventEmptyReq = (req, res, next) => {
-  if (!Object.keys(req.body).length) {
+  if (!req.body||typeof req.body !== 'object'||!Object.keys(req.body).length) {
     return res.status(400).json({
-      message: "At least one field is required to update"
+      message: "Request body is required"
     });
   }
   next();
