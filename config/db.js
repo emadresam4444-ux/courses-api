@@ -1,4 +1,3 @@
-// إعدادات الاتصال بقاعدة البيانات
 const mongoose = require("mongoose");
 const URL = process.env.MONGO_URL;
 const mongooseDB=async ()=>{
